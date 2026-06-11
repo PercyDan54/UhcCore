@@ -371,7 +371,7 @@ public class PlayerManager {
 		GameManager gm = GameManager.getGameManager();
 
 		uhcPlayer.setState(PlayerState.DEAD);
-		uhcPlayer.sendPrefixedMessage(Lang.PLAYERS_WELCOME_BACK_SPECTATING);
+		//uhcPlayer.sendPrefixedMessage(Lang.PLAYERS_WELCOME_BACK_SPECTATING);
 
 		if(gm.getConfig().get(MainConfig.SPECTATING_TELEPORT)) {
 			uhcPlayer.sendPrefixedMessage(Lang.COMMAND_SPECTATING_HELP);
@@ -386,12 +386,12 @@ public class PlayerManager {
 			player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
 			player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 999999, 0));
 
-			if (gm.getGameState().equals(GameState.DEATHMATCH) && gm.getMapLoader().getArena().isUsed()) {
+			/*if (gm.getGameState().equals(GameState.DEATHMATCH) && gm.getMapLoader().getArena().isUsed()) {
 				player.teleport(gm.getMapLoader().getArena().getLocation());
 			}else{
 				Location loc = gm.getMapLoader().getUhcWorld(World.Environment.NORMAL).getBlockAt(0, 100, 0).getLocation();
 				player.teleport(loc);
-			}
+			}*/
 		} catch (UhcPlayerNotOnlineException ingored) {
 			// Do nothing because DEAD is a safe state
 		}

@@ -1,4 +1,10 @@
 {
+	"relay":{
+		"name":"Relay",
+		"description":[
+			"Relay."
+		]
+	},
 	"cutclean":{
 		"name":"CutClean",
 		"description":[

@@ -4,10 +4,12 @@ import com.gmail.val59000mc.exceptions.UhcPlayerNotOnlineException;
 import com.gmail.val59000mc.game.GameManager;
 import com.gmail.val59000mc.players.UhcPlayer;
 import com.gmail.val59000mc.players.UhcTeam;
-import com.gmail.val59000mc.utils.LocationUtils;
 
+import java.util.Objects;
 import java.util.logging.Logger;
 
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 public class TeleportPlayersTask implements Runnable{
@@ -33,11 +35,12 @@ public class TeleportPlayersTask implements Runnable{
 				continue;
 			}
 
-			LOGGER.info("Teleporting " + player.getName() + " to " + team.getStartingLocation());
+			Location loc = Objects.requireNonNull(gameManager.getMapLoader().getUhcWorld(World.Environment.NORMAL)).getSpawnLocation();
+			LOGGER.info("Teleporting " + player.getName() + " to " + loc);
 
-			uhcPlayer.freezePlayer(team.getStartingLocation());
+			uhcPlayer.freezePlayer(loc);
 
-			UhcPlayer.teleport(player, LocationUtils.withSameDirection(team.getStartingLocation(), player));
+			UhcPlayer.teleport(player, loc);
 
 			gameManager.getPlayerManager().setPlayerStartPlaying(uhcPlayer);
 

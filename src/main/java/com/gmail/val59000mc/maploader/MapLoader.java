@@ -372,6 +372,7 @@ public class MapLoader {
 				? defaultWorld.getSpawnLocation().clone().add(0.5, 0, 0.5)
 				: new Location(defaultWorld, 0.5, 100, 0.5);
 			lobby = new Lobby(spawnLocation);
+			lobby.build();
 		}else {
 			lobby = new Lobby(new Location(overworld, 0.5, 200, 0.5));
 			lobby.build();
@@ -405,9 +406,9 @@ public class MapLoader {
 	}
 
 	public void setWorldBorder(World world, int x, int z, double sideLength) {
-		WorldBorder worldborder = world.getWorldBorder();
+		/*WorldBorder worldborder = world.getWorldBorder();
 		worldborder.setCenter(x, z);
-		worldborder.setSize(sideLength);
+		worldborder.setSize(sideLength);*/
 	}
 
 	private void copyWorld(String sourceName, String destinationName) throws IOException {

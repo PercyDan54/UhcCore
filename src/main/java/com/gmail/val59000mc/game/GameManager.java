@@ -267,7 +267,7 @@ public class GameManager{
 
 		playerManager.startWatchPlayerPlayingTask();
 		Bukkit.getScheduler().runTaskAsynchronously(UhcCore.getPlugin(), new ElapsedTimeTask(this, customEventHandler));
-		Bukkit.getScheduler().runTaskAsynchronously(UhcCore.getPlugin(), new EnablePVPTask(this));
+		//Bukkit.getScheduler().runTaskAsynchronously(UhcCore.getPlugin(), new EnablePVPTask(this));
 
 		if (config.get(MainConfig.ENABLE_EPISODE_MARKERS)){
 			Bukkit.getScheduler().runTaskAsynchronously(UhcCore.getPlugin(), new EpisodeMarkersTask(this));
@@ -297,7 +297,7 @@ public class GameManager{
 
 	public void broadcastInfoMessage(String message) {
 		if (message.isEmpty()) return;
-		broadcastMessage(Lang.DISPLAY_MESSAGE_PREFIX+" "+message);
+		broadcastMessage(Lang.DISPLAY_MESSAGE_PREFIX+message);
 	}
 
 	public void loadConfig(){
@@ -356,11 +356,11 @@ public class GameManager{
 		listeners.add(new ItemsListener(gameManager, config, playerManager, teamManager, scenarioManager, scoreboardHandler));
 		listeners.add(new TeleportListener());
 		listeners.add(new PlayerDeathListener(playerDeathHandler));
-		listeners.add(new EntityDeathListener(playerManager, config, playerDeathHandler));
-		listeners.add(new CraftListener());
+		//listeners.add(new EntityDeathListener(playerManager, config, playerDeathHandler));
+		//listeners.add(new CraftListener());
 		listeners.add(new PingListener());
 		listeners.add(new BlockListener(this));
-		listeners.add(new WorldListener());
+		//listeners.add(new WorldListener());
 		listeners.add(new PlayerMovementListener(playerManager));
 		listeners.add(new PlayerHungerGainListener(playerManager));
 		for(Listener listener : listeners){

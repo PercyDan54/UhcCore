@@ -184,7 +184,7 @@ public class TeamManager{
 		// gone through an entire cycle of colors.
 
 		// 1. Pick a random color from the "free" section at the back of the array
-		final int freeIndex = ThreadLocalRandom.current().nextInt(randomColorCounter, randomColorPool.length);
+		final int freeIndex = randomColorCounter;
 		final ChatColor randomColor = randomColorPool[freeIndex];
 
 		// 2. Swap it to the "used" section at the front of the array

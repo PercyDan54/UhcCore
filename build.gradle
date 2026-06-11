@@ -103,6 +103,14 @@ dependencies {
 	shadowJar "net.zerodind:uhccore-nms-1_21_R6:1.0.0"
 }
 
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = "UTF-8"
+}
+
+tasks.withType(Javadoc).configureEach {
+	options.encoding = "UTF-8"
+}
+
 java {
 	// Target Java 8 for Minecraft 1.8 support
 	toolchain.languageVersion = JavaLanguageVersion.of(8)
@@ -229,6 +237,10 @@ int getJavaVersionFor(String mcVersion) {
 
 boolean isSnapshot() {
 	return project.version.endsWith("-SNAPSHOT");
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = "UTF-8"
 }
 
 String getPluginVersion() {

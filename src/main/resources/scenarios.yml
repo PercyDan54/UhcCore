@@ -1,3 +1,7 @@
+relay:
+  delay: 60
+  shuffle-players: false
+  allow-spectate: true
 cutclean:
   # Set to false to disable unlimited lapis in CutClean
   unlimited-lapis: true
