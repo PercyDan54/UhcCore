@@ -239,10 +239,6 @@ boolean isSnapshot() {
 	return project.version.endsWith("-SNAPSHOT");
 }
 
-tasks.withType(JavaCompile).configureEach {
-	options.encoding = "UTF-8"
-}
-
 String getPluginVersion() {
 	def commit = indraGit.commit()
 	if (commit != null && isSnapshot()) {

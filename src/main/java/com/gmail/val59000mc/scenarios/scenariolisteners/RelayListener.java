@@ -4,7 +4,6 @@ import com.gmail.val59000mc.UhcCore;
 import com.gmail.val59000mc.configuration.MainConfig;
 import com.gmail.val59000mc.events.UhcStartedEvent;
 import com.gmail.val59000mc.exceptions.UhcPlayerNotOnlineException;
-import com.gmail.val59000mc.players.PlayerState;
 import com.gmail.val59000mc.players.UhcPlayer;
 import com.gmail.val59000mc.scenarios.Option;
 import com.gmail.val59000mc.scenarios.ScenarioListener;
@@ -35,7 +34,7 @@ public class RelayListener extends ScenarioListener {
 	private int delay = 60;
 
 	@Option(key = "offline-timeout")
-	private long offlineTimeout = 60; // 掉线最大等待时间（秒）
+	private int offlineTimeout = 60; // 掉线最大等待时间（秒）
 
 	@Option(key = "shuffle-players")
 	private boolean shufflePlayers;
@@ -197,7 +196,7 @@ public class RelayListener extends ScenarioListener {
 
 		getGameManager().broadcastInfoMessage("§a[接力] 控制权已转移给: §b" + targetPlayer.getName());
 		targetUhc.sendMessage("§a[接力] 到你了！");
-		getPlayerManager().playSoundTo(targetUhc, Sound.BLOCK_NOTE_BLOCK_CHIME);
+		getPlayerManager().playSoundTo(targetUhc, Sound.BLOCK_NOTE_BLOCK_BELL);
 	}
 
 	private void setSpectateState(UhcPlayer uhcPlayer) {
@@ -325,12 +324,7 @@ public class RelayListener extends ScenarioListener {
 				listener.broadcastTimer--;
 			}
 
-			if (timeLeft <= 0) {
-				if (listener.tryRelay()) {
-					timeLeft = listener.delay;
-				}
-			}
-			else {
+			if (timeLeft > 0) {
 				for (UhcPlayer player : listener.shuffledPlayers) {
 					if (player.isOnline()) {
 						try {
@@ -353,6 +347,10 @@ public class RelayListener extends ScenarioListener {
 						listener.countdownBossBar.setColor(BarColor.RED);
 						listener.getPlayerManager().playSoundToAll(UniversalSound.CLICK.getSound());
 					}
+				}
+			} else {
+				if (listener.tryRelay()) {
+					timeLeft = listener.delay;
 				}
 			}
 
