@@ -3,12 +3,15 @@ package com.gmail.val59000mc.scenarios.scenariolisteners;
 import com.gmail.val59000mc.UhcCore;
 import com.gmail.val59000mc.configuration.MainConfig;
 import com.gmail.val59000mc.events.UhcStartedEvent;
+import com.gmail.val59000mc.exceptions.UhcPlayerDoesNotExistException;
 import com.gmail.val59000mc.exceptions.UhcPlayerNotOnlineException;
+import com.gmail.val59000mc.players.PlayerState;
 import com.gmail.val59000mc.players.UhcPlayer;
 import com.gmail.val59000mc.scenarios.Option;
 import com.gmail.val59000mc.scenarios.ScenarioListener;
 import com.gmail.val59000mc.utils.TimeUtils;
 import com.gmail.val59000mc.utils.UniversalSound;
+import io.papermc.lib.PaperLib;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
@@ -20,13 +23,18 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class RelayListener extends ScenarioListener {
@@ -50,6 +58,7 @@ public class RelayListener extends ScenarioListener {
 	private int currentPlayerIndex = -1;
 	private UhcPlayer currentPlayer;
 	private BossBar countdownBossBar;
+	private static final Logger LOGGER = Logger.getLogger(RelayListener.class.getCanonicalName());
 
 	@EventHandler
 	public void onGameStart(UhcStartedEvent e) {
@@ -62,8 +71,8 @@ public class RelayListener extends ScenarioListener {
 		shuffledPlayers = players;
 		currentPlayerIndex = 0;
 		currentPlayer = players.get(0);
+		printPlayerOrder();
 		countdownBossBar = Bukkit.createBossBar("§6§l接力倒计时", BarColor.BLUE, BarStyle.SOLID);
-		getGameManager().broadcastInfoMessage("[接力] 玩家顺序: §b" + shuffledPlayers.stream().map(UhcPlayer::getName).collect(Collectors.joining(", ")));
 
 		for (int i = 0; i < players.size(); i++) {
 			UhcPlayer uhcPlayer = players.get(i);
@@ -83,6 +92,10 @@ public class RelayListener extends ScenarioListener {
 		taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(UhcCore.getPlugin(), new RelayTask(this), TimeUtils.SECOND_TICKS);
 	}
 
+	private void printPlayerOrder() {
+		getGameManager().broadcastInfoMessage("[接力] 玩家顺序: " + shuffledPlayers.stream().map(UhcPlayer::getDisplayName).collect(Collectors.joining(", ")));
+	}
+
 	@EventHandler
 	public void onEnable() {
 	}
@@ -90,6 +103,64 @@ public class RelayListener extends ScenarioListener {
 	@EventHandler
 	public void onDisable() {
 		Bukkit.getScheduler().cancelTask(taskId);
+	}
+
+	@EventHandler(priority = EventPriority.LOW)
+	public void onPlayerJoin(PlayerJoinEvent e) {
+		Bukkit.getScheduler().runTaskLater(UhcCore.getPlugin(), () -> onPlayerJoin(e.getPlayer()), 3);
+	}
+
+	private void onPlayerJoin(Player player) {
+		if (countdownBossBar != null) {
+			countdownBossBar.removePlayer(player);
+		}
+
+		if (shuffledPlayers != null) {
+			UhcPlayer uhcPlayer = getPlayerManager().getOrCreateUhcPlayer(player);
+
+			if (!shuffledPlayers.contains(uhcPlayer)) {
+				LOGGER.info("Added player " + player.getName());
+				shuffledPlayers.add(uhcPlayer);
+			}
+
+			printPlayerOrder();
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOW)
+	public void onPlayerQuit(PlayerQuitEvent e) {
+		if (countdownBossBar != null) {
+			countdownBossBar.removePlayer(e.getPlayer());
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOW)
+	public void onPlayerRespawn(PlayerRespawnEvent event) {
+		if (event.isBedSpawn() || isRespawnAnchor(event))
+			return;
+
+		try {
+			UhcPlayer uhcPlayer = getPlayerManager().getUhcPlayer(event.getPlayer().getUniqueId());
+			if (uhcPlayer.getState() == PlayerState.PLAYING) {
+				World world = getGameManager().getMapLoader().getUhcWorld(World.Environment.NORMAL);
+				if (world != null)
+					event.setRespawnLocation(world.getSpawnLocation());
+			}
+		} catch (UhcPlayerDoesNotExistException e) { }
+	}
+
+	private static boolean isRespawnAnchor(PlayerRespawnEvent e) {
+		if (!PaperLib.isVersion(20)) {
+			return false;
+		}
+
+		try {
+			java.lang.reflect.Method isAnchorMethod = e.getClass().getMethod("isAnchorSpawn");
+			return (boolean) isAnchorMethod.invoke(e);
+		} catch (Exception ex) {
+		}
+
+		return false;
 	}
 
 	@EventHandler
@@ -136,7 +207,9 @@ public class RelayListener extends ScenarioListener {
 		}
 
 		// 3. 超时了！触发强制跳过逻辑
+		shuffledPlayers.remove(nextIndex);
 		getGameManager().broadcastMessage("§4[接力] 等待超时！强制寻找下一个在线玩家...");
+		printPlayerOrder();
 		offlineWaitTimer = 0;
 		return forceSkipAndRelay();
 	}
@@ -180,7 +253,7 @@ public class RelayListener extends ScenarioListener {
 
 		if (!sourceUhc.isOnline()) {
 			resetPlayerAsNewSpawn(targetPlayer);
-			getGameManager().broadcastInfoMessage("§e[接力] 前任玩家 " + sourceUhc.getName() + " 已离线，" + targetPlayer.getName() + " 从出生点重新出发！");
+			getGameManager().broadcastInfoMessage("§e[接力] 前任玩家 " + sourceUhc.getDisplayName() + "§e 已离线，" + targetPlayer.getDisplayName() + " 从出生点重新出发！");
 		} else {
 			Player sourcePlayer;
 			try {
@@ -193,10 +266,11 @@ public class RelayListener extends ScenarioListener {
 		// 更新指针
 		currentPlayerIndex = newIndex;
 		currentPlayer = targetUhc;
+		targetUhc.setState(PlayerState.PLAYING);
 
-		getGameManager().broadcastInfoMessage("§a[接力] 控制权已转移给: §b" + targetPlayer.getName());
-		targetUhc.sendMessage("§a[接力] 到你了！");
-		getPlayerManager().playSoundTo(targetUhc, Sound.BLOCK_NOTE_BLOCK_BELL);
+		getGameManager().broadcastInfoMessage("§a[接力] 控制权已转移给: " + targetPlayer.getDisplayName());
+		//targetUhc.sendMessage("§a[接力] 到你了！");
+		getPlayerManager().playSoundTo(targetUhc, Sound.BLOCK_NOTE_BLOCK_PLING);
 	}
 
 	private void setSpectateState(UhcPlayer uhcPlayer) {
@@ -215,7 +289,7 @@ public class RelayListener extends ScenarioListener {
 	}
 
 	private void resetPlayerAsNewSpawn(Player target) {
-		target.teleport(target.getWorld().getSpawnLocation());
+		target.teleport(getGameManager().getMapLoader().getUhcWorld(World.Environment.NORMAL).getSpawnLocation());
 		target.setGameMode(GameMode.SURVIVAL);
 		target.setHealth(20.0);
 		target.setFoodLevel(20);
@@ -343,9 +417,11 @@ public class RelayListener extends ScenarioListener {
 
 				if (timeLeft <= 30) {
 					listener.countdownBossBar.setColor(BarColor.YELLOW);
-					if (timeLeft <= 10) {
+					if (timeLeft <= 15) {
 						listener.countdownBossBar.setColor(BarColor.RED);
-						listener.getPlayerManager().playSoundToAll(UniversalSound.CLICK.getSound());
+						if (timeLeft <= 10) {
+							listener.getPlayerManager().playSoundToAll(UniversalSound.CLICK.getSound());
+						}
 					}
 				}
 			} else {

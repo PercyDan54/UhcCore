@@ -1,6 +1,6 @@
 relay:
   delay: 60
-  offline-timeout: 60
+  offline-timeout: 30
   shuffle-players: false
   allow-spectate: true
 cutclean:

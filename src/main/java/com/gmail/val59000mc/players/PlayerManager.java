@@ -350,7 +350,7 @@ public class PlayerManager {
 
 				player.setGameMode(GameMode.SURVIVAL);
 				UhcItems.giveGameItemTo(player, GameItem.COMPASS_ITEM);
-				UhcItems.giveGameItemTo(player, GameItem.CUSTOM_CRAFT_BOOK);
+				//UhcItems.giveGameItemTo(player, GameItem.CUSTOM_CRAFT_BOOK);
 				KitsManager.giveKitTo(player);
 			} catch (UhcPlayerNotOnlineException ignored) {
 				// Nothing done
