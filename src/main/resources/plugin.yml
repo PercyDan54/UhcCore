@@ -9,6 +9,9 @@ commands:
   uhccore:
     description: "Type '/uhccore help' to see a list of commands"
     usage: "/uhccore <sub-command> (Debug command only!)"
+  relay:
+    description: "This command is used by the Relay scenario"
+    usage: "/relay <sub-command>"
   chat:
     description: "Type '/chat' to toggle global chat"
     usage: "/chat"

@@ -6,11 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-import com.gmail.val59000mc.versionadapters.adapters.ChunkyPreGenerator;
-import com.gmail.val59000mc.versionadapters.adapters.GetWorldMinHeightAdapter;
-import com.gmail.val59000mc.versionadapters.adapters.SetBiomeProviderAdapter;
-import com.gmail.val59000mc.versionadapters.adapters.SetMaxStackSizeAdapter;
-import com.gmail.val59000mc.versionadapters.adapters.SetTeamColorAdapter;
+import com.gmail.val59000mc.versionadapters.adapters.*;
 
 public class VersionAdapterLoader {
 
@@ -27,6 +23,7 @@ public class VersionAdapterLoader {
 		requireVersionAdapter(loadedAdapters, classLoader, SetBiomeProviderAdapter.class, true);
 		requireVersionAdapter(loadedAdapters, classLoader, SetTeamColorAdapter.class, true);
 		requireVersionAdapter(loadedAdapters, classLoader, GetWorldMinHeightAdapter.class, true);
+		requireVersionAdapter(loadedAdapters, classLoader, RespawnAnchorAdapter.class, true);
 
 		requireVersionAdapter(loadedAdapters, classLoader, ChunkyPreGenerator.class, false);
 

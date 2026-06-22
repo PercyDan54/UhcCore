@@ -80,6 +80,7 @@ dependencies {
 	implementation project(":version-adapters")
 	shadowJar project(":version-adapters:spigot_1_8_8")
 	shadowJar project(":version-adapters:spigot_1_12")
+	shadowJar project(":version-adapters:spigot_1_16")
 	shadowJar project(":version-adapters:spigot_1_17")
 	shadowJar project(":version-adapters:spigot_1_17_1")
 	shadowJar project(":version-adapters:spigot_1_20_5")

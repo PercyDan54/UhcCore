@@ -1,0 +1,33 @@
+plugins {
+	id "java-library"
+}
+
+repositories {
+	mavenCentral()
+	maven { // For Spigot API
+		name = "spigotmc"
+		url = "https://hub.spigotmc.org/nexus/content/groups/public/"
+		content {
+			includeGroup "org.bukkit"
+			includeGroup "org.spigotmc"
+			includeGroup "net.md-5"
+		}
+	}
+	maven { // For PaperLib
+		name = "papermc"
+		url = "https://repo.papermc.io/repository/maven-public/"
+		content {
+			includeGroup "io.papermc"
+		}
+	}
+}
+
+dependencies {
+	implementation project(":version-adapters")
+	compileOnly "org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT"
+	implementation "io.papermc:paperlib:1.0.8"
+	compileOnly "com.google.auto.service:auto-service-annotations:1.1.1"
+	annotationProcessor "com.google.auto.service:auto-service:1.1.1"
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)

@@ -355,7 +355,7 @@ public class GameManager{
 		listeners.add(new PlayerDamageListener(this));
 		listeners.add(new ItemsListener(gameManager, config, playerManager, teamManager, scenarioManager, scoreboardHandler));
 		listeners.add(new TeleportListener());
-		listeners.add(new PlayerDeathListener(playerDeathHandler));
+		//listeners.add(new PlayerDeathListener(playerDeathHandler));
 		//listeners.add(new EntityDeathListener(playerManager, config, playerDeathHandler));
 		//listeners.add(new CraftListener());
 		listeners.add(new PingListener());
