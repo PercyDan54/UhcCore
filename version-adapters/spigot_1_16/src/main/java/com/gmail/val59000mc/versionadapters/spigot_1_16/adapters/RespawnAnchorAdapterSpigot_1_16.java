@@ -10,8 +10,6 @@ import com.google.auto.service.AutoService;
 
 import io.papermc.lib.PaperLib;
 
-import java.util.OptionalInt;
-
 @AutoService(RespawnAnchorAdapter.class)
 public class RespawnAnchorAdapterSpigot_1_16 implements RespawnAnchorAdapter {
 	@Override

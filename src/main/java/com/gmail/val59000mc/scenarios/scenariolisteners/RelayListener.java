@@ -13,7 +13,6 @@ import com.gmail.val59000mc.scenarios.ScenarioListener;
 import com.gmail.val59000mc.utils.TimeUtils;
 import com.gmail.val59000mc.utils.UniversalSound;
 import com.gmail.val59000mc.versionadapters.adapters.RespawnAnchorAdapter;
-import io.papermc.lib.PaperLib;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
@@ -33,6 +32,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
@@ -42,7 +42,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.OptionalInt;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -138,6 +138,9 @@ public class RelayListener extends ScenarioListener {
 		if (shuffledPlayers != null)
 			shuffledPlayers.clear();
 
+		if (countdownBossBar != null)
+			countdownBossBar.removeAll();
+
 		shuffledPlayers = null;
 	}
 
@@ -178,7 +181,7 @@ public class RelayListener extends ScenarioListener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerInteractBed(PlayerInteractEvent event) {
-		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+		if (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.getHand() != EquipmentSlot.HAND) return;
 
 		Block clicked = event.getClickedBlock();
 		if (clicked == null) return;
@@ -445,8 +448,7 @@ public class RelayListener extends ScenarioListener {
 			File file = new File(UhcCore.getPlugin().getDataFolder(), "relay_save.yml");
 			config.save(file);
 		} catch (IOException e) {
-			LOGGER.severe("Failed to save game state: IO Exception");
-			e.printStackTrace();
+			LOGGER.log(Level.WARNING,"Failed to save game state: IO Exception", e);
 			throw e;
 		}
 	}
@@ -494,7 +496,7 @@ public class RelayListener extends ScenarioListener {
 			getGameManager().broadcastInfoMessage("§a[接力] 游戏进度读取成功！已赋予给: " + p.getDisplayName());
 
 		} catch (UhcPlayerNotOnlineException e) {
-			LOGGER.warning("Failed to load state: Player not online!");
+			LOGGER.log(Level.WARNING, "Failed to load state: ", e);
 		}
 	}
 

@@ -78,7 +78,7 @@ public class TeleportListener implements Listener{
 
 	@EventHandler
 	public void onPlayerChangedWorld(PlayerChangedWorldEvent e){
-		GameManager gm = GameManager.getGameManager();
+		/*GameManager gm = GameManager.getGameManager();
 		Player player = e.getPlayer();
 
 		if (gm.getConfig().get(MainConfig.ENABLE_THE_END) && e.getFrom().getName().equals(gm.getMapLoader().getUhcWorldUuid(Environment.THE_END))){
@@ -87,7 +87,7 @@ public class TeleportListener implements Listener{
 			Location loc = LocationUtils.getRandomSpawnLocation(world, maxDistance);
 			LOGGER.info("Teleporting " + player.getName() + " to " + loc);
 			player.teleport(loc);
-		}
+		}*/
 	}
 
 	@EventHandler
